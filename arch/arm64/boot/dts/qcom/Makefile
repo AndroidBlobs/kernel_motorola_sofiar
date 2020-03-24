@@ -1,3 +1,97 @@
+# Only include Motorola DTBs
+ifeq ($(CONFIG_MMI_DEVICE_DTBS),y)
+ifneq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
+	$(error Moto DT w/o overlay is undefined!!!)
+endif
+
+# Add 1k of padding to the DTBs to allow for environment variables
+# to be runtime added by the bootloader (i.e. /chosen properties)
+DTC_FLAGS += -p 1024
+
+# Motorola Device Trees
+
+#CONFIG_DOHA_DTB
+dtbo-$(CONFIG_DOHA_DTB) += \
+	trinket-doha-evt1-overlay.dtbo \
+	trinket-doha-evt2-overlay.dtbo \
+	trinket-doha-dvt2-overlay.dtbo
+
+dtbo-$(CONFIG_ROMA_DTB) += \
+	trinket-roma-evb-overlay.dtbo \
+	trinket-roma-evt1-overlay.dtbo \
+	trinket-roma-evt2-overlay.dtbo
+
+dtbo-$(CONFIG_RAV_DTB) += \
+	trinket-rav-evb1-overlay.dtbo \
+	trinket-rav-evb1-na-overlay.dtbo \
+	trinket-rav-evb2-overlay.dtbo \
+	trinket-rav-evb2-na-overlay.dtbo \
+	trinket-rav-pvt1-overlay.dtbo \
+	trinket-rav-pvt1-na-overlay.dtbo
+
+dtbo-$(CONFIG_SOFIA_DTB) += \
+	trinket-sofia-evb1-overlay.dtbo \
+	trinket-sofia-evt-overlay.dtbo \
+	trinket-sofia-dvt1a-overlay.dtbo \
+	trinket-sofia-dvt1b-overlay.dtbo \
+	trinket-sofia-dvt2-overlay.dtbo \
+	trinket-sofia-pvt-overlay.dtbo
+
+dtbo-$(CONFIG_SOFIAP_DTB) += \
+	trinket-sofiap-evb-overlay.dtbo \
+	trinket-sofiap-evt-overlay.dtbo \
+	trinket-sofiap-dvt1a-overlay.dtbo \
+	trinket-sofiap-dvt1b-overlay.dtbo \
+	trinket-sofiap-dvt2-overlay.dtbo \
+	trinket-sofiap-pvt-overlay.dtbo
+
+dtbo-$(CONFIG_SOFIAR_DTB) += \
+	trinket-sofiar-evb1-overlay.dtbo \
+	trinket-sofiar-evt1-overlay.dtbo \
+	trinket-sofiar-evt2-overlay.dtbo \
+	trinket-sofiar-dvt1a-overlay.dtbo \
+	trinket-sofiar-dvt1b-overlay.dtbo \
+	trinket-sofiar-dvt2-overlay.dtbo \
+	trinket-sofiar-pvt-overlay.dtbo
+
+trinket-doha-evt1-overlay.dtbo-base :=  trinket-doha-base.dtb
+trinket-doha-evt2-overlay.dtbo-base :=  trinket-doha-base.dtb
+trinket-doha-dvt2-overlay.dtbo-base :=  trinket-doha-base.dtb
+
+trinket-roma-evb-overlay.dtbo-base :=  trinket-roma-base.dtb
+trinket-roma-evt1-overlay.dtbo-base :=  trinket-roma-base.dtb
+trinket-roma-evt2-overlay.dtbo-base :=  trinket-roma-base.dtb
+
+trinket-sofia-evb1-overlay.dtbo-base :=  trinket-sofia-base.dtb
+trinket-sofia-evt-overlay.dtbo-base :=  trinket-sofia-base.dtb
+trinket-sofia-dvt1a-overlay.dtbo-base :=  trinket-sofia-base.dtb
+trinket-sofia-dvt1b-overlay.dtbo-base :=  trinket-sofia-base.dtb
+trinket-sofia-dvt2-overlay.dtbo-base :=  trinket-sofia-base.dtb
+trinket-sofia-pvt-overlay.dtbo-base :=  trinket-sofia-base.dtb
+
+trinket-sofiap-evb-overlay.dtbo-base :=  trinket-sofiap-base.dtb
+trinket-sofiap-evt-overlay.dtbo-base :=  trinket-sofiap-base.dtb
+trinket-sofiap-dvt1a-overlay.dtbo-base :=  trinket-sofiap-base.dtb
+trinket-sofiap-dvt1b-overlay.dtbo-base :=  trinket-sofiap-base.dtb
+trinket-sofiap-dvt2-overlay.dtbo-base :=  trinket-sofiap-base.dtb
+trinket-sofiap-pvt-overlay.dtbo-base :=  trinket-sofiap-base.dtb
+
+trinket-sofiar-evb1-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+trinket-sofiar-evt1-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+trinket-sofiar-evt2-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+trinket-sofiar-dvt1a-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+trinket-sofiar-dvt1b-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+trinket-sofiar-dvt2-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+trinket-sofiar-pvt-overlay.dtbo-base :=  trinket-sofiar-base.dtb
+
+trinket-rav-evb1-overlay.dtbo-base :=  trinket-rav-base.dtb
+trinket-rav-evb1-na-overlay.dtbo-base :=  trinket-rav-base.dtb
+trinket-rav-evb2-overlay.dtbo-base :=  trinket-rav-base.dtb
+trinket-rav-evb2-na-overlay.dtbo-base :=  trinket-rav-base.dtb
+trinket-rav-pvt1-overlay.dtbo-base :=  trinket-rav-base.dtb
+trinket-rav-pvt1-na-overlay.dtbo-base :=  trinket-rav-base.dtb
+
+else
 # SPDX-License-Identifier: GPL-2.0
 dtb-$(CONFIG_ARCH_QCOM)	+= apq8016-sbc.dtb
 dtb-$(CONFIG_ARCH_QCOM)	+= apq8096-db820c.dtb
@@ -302,6 +396,7 @@ dtb-$(CONFIG_ARCH_SDXPRAIRIE) += sdxprairie-rumi.dtb \
 	sa515m-ccard.dtb \
 	sa515m-ccard-pcie-ep.dtb \
 	sa515m-ccard-usb-ep.dtb
+endif # CONFIG_MMI_DEVICE_DTBS
 
 ifeq ($(CONFIG_ARM64),y)
 always		:= $(dtb-y)
