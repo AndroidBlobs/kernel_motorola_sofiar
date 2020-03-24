@@ -129,6 +129,8 @@
 		ipc_log_string(ctx, x); \
 } while (0)
 
+#define MSM_CONSOLE_NAME	"ttyMSM"
+
 #define DMA_RX_BUF_SIZE		(2048)
 #define UART_CONSOLE_RX_WM	(2)
 
@@ -300,10 +302,16 @@ static bool check_transfers_inflight(struct uart_port *uport)
 	return xfer_on;
 }
 
-static void wait_for_transfers_inflight(struct uart_port *uport)
+static int wait_for_transfers_inflight(struct uart_port *uport)
 {
 	int iter = 0;
 	struct msm_geni_serial_port *port = GET_DEV_PORT(uport);
+	unsigned int geni_status;
+
+	geni_status = geni_read_reg_nolog(uport->membase, SE_GENI_STATUS);
+	/* Possible stop rx is called before this. */
+	if (!(geni_status & S_GENI_CMD_ACTIVE))
+		goto exit;
 
 	while (iter < WAIT_XFER_MAX_ITER) {
 		if (check_transfers_inflight(uport)) {
@@ -327,6 +335,8 @@ static void wait_for_transfers_inflight(struct uart_port *uport)
 			"%s IOS 0x%x geni status 0x%x rx: fifo 0x%x dma 0x%x\n",
 		__func__, geni_ios, geni_status, rx_fifo_status, rx_dma);
 	}
+exit:
+	return 0;
 }
 
 static int vote_clock_on(struct uart_port *uport)
@@ -2270,6 +2280,13 @@ msm_geni_serial_early_console_write(struct console *con, const char *s,
 	__msm_geni_serial_console_write(&dev->port, s, n);
 }
 
+static int
+msm_geni_serial_early_console_match(struct console *con, char *name, int idx,
+				    char *options)
+{
+	return (!name || strcmp(MSM_CONSOLE_NAME, name));
+}
+
 static int __init
 msm_geni_serial_earlycon_setup(struct earlycon_device *dev,
 		const char *opt)
@@ -2356,6 +2373,7 @@ msm_geni_serial_earlycon_setup(struct earlycon_device *dev,
 	geni_write_reg_nolog(s_clk_cfg, uport->membase, GENI_SER_S_CLK_CFG);
 
 	dev->con->write = msm_geni_serial_early_console_write;
+	dev->con->match = msm_geni_serial_early_console_match;
 	dev->con->setup = NULL;
 	/*
 	 * Ensure that the early console setup completes before
@@ -2378,7 +2396,7 @@ static void console_unregister(struct uart_driver *drv)
 }
 
 static struct console cons_ops = {
-	.name = "ttyMSM",
+	.name = MSM_CONSOLE_NAME,
 	.write = msm_geni_serial_console_write,
 	.device = uart_console_device,
 	.setup = msm_geni_console_setup,
