@@ -38,6 +38,7 @@ msm_drm-y := \
 	sde/sde_core_perf.o \
 	sde/sde_rm.o \
 	sde/sde_kms_utils.o \
+	sde/sde_motUtil.o \
 	sde/sde_kms.o \
 	sde/sde_plane.o \
 	sde/sde_connector.o \
@@ -156,6 +157,8 @@ msm_drm-$(CONFIG_DRM_MSM_DSI_STAGING) += dsi-staging/dsi_phy.o \
 				dsi-staging/dsi_panel.o \
 				dsi-staging/dsi_clk_manager.o \
 				dsi-staging/dsi_display_test.o
+
+msm_drm-$(CONFIG_DRM_MSM_DSI_MOT_EXT) += dsi-staging/dsi_display_mot_ext.o
 
 msm_drm-$(CONFIG_DSI_PARSER) += dsi-staging/dsi_parser.o
 
